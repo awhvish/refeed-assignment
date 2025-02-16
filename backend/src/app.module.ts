@@ -8,10 +8,7 @@ import { ConfigModule } from '@nestjs/config';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    MongooseModule.forRoot(
-      process.env.MONGO_URI ||
-        'mongodb+srv://avislowha9:AvisInAtlas@cluster.9i2x2a5.mongodb.net/?retryWrites=true&w=majority&appName=Cluster',
-    ),
+    MongooseModule.forRoot(process.env.MONGO_URI || ''),
     TaskModule,
   ],
   controllers: [AppController],
