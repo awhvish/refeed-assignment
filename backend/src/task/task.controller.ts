@@ -6,8 +6,6 @@ import {
   Put,
   Param,
   Body,
-  UsePipes,
-  ValidationPipe,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from 'src/dto/create-task.dto';
