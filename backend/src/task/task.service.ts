@@ -3,7 +3,6 @@ import { TaskDocument, Task } from 'src/schemas/task.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { CreateTaskDto } from 'src/dto/create-task.dto';
-import { TaskIdDto } from 'src/dto/task-id.dto';
 import { UpdateTaskDto } from 'src/dto/update-task.dto';
 
 @Injectable()
@@ -11,13 +10,8 @@ export class TaskService {
   constructor(@InjectModel(Task.name) private taskModel: Model<TaskDocument>) {}
 
   async createTask(newTask: CreateTaskDto): Promise<Task> {
-    const createdTask = new this.taskModel({
-      title: newTask.title,
-      description: newTask.description,
-      ...(newTask.status && { status: newTask.status }),
-    });
-    await createdTask.save();
-    return createdTask;
+    const createdTask = new this.taskModel(newTask);
+    return await createdTask.save();
   }
 
   async GetAllTask(): Promise<Task[]> {
@@ -25,23 +19,17 @@ export class TaskService {
     return allTasks;
   }
 
-  async getTaskById(id: TaskIdDto): Promise<Task> {
-    if (!Types.ObjectId.isValid(id.id)) {
-      throw new NotFoundException('Invalid Task Id');
-    }
-    const task = await this.taskModel.findById(id.id);
+  async getTaskById(id: string): Promise<Task> {
+    const task = await this.taskModel.findById(id);
     if (!task) {
       throw new NotFoundException('Task not found');
     }
     return task;
   }
 
-  async updateTask(updateData: UpdateTaskDto, id: TaskIdDto): Promise<Task> {
-    if (!Types.ObjectId.isValid(id.id)) {
-      throw new NotFoundException('Invalid Task Id');
-    }
+  async updateTask(updateData: UpdateTaskDto, id: string): Promise<Task> {
     const updatedTask = await this.taskModel.findOneAndUpdate(
-      { _id: id.id },
+      { _id: id },
       updateData,
       {
         new: true,
@@ -53,11 +41,11 @@ export class TaskService {
     return updatedTask;
   }
 
-  async deleteTask(id: TaskIdDto) {
-    if (!Types.ObjectId.isValid(id.id)) {
+  async deleteTask(id: string) {
+    if (!Types.ObjectId.isValid(id)) {
       throw new NotFoundException('Invalid Task Id');
     }
-    const deletedTask = await this.taskModel.findByIdAndDelete(id.id);
+    const deletedTask = await this.taskModel.findByIdAndDelete(id);
     if (!deletedTask) {
       throw new NotFoundException('Task not found');
     }

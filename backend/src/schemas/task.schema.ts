@@ -1,19 +1,16 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
 
 export type TaskDocument = HydratedDocument<Task>;
 
 export enum TaskStatus {
   Pending = 'Pending',
-  InProgress = 'In-progress',
+  InProgress = 'In-Progress',
   Completed = 'Completed',
 }
 
 @Schema({ timestamps: true })
 export class Task {
-  @Prop({ type: Types.ObjectId, auto: true })
-  _id?: Types.ObjectId;
-
   @Prop({ required: true, trim: true })
   title: string;
 

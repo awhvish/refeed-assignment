@@ -12,7 +12,7 @@ export class CreateTaskDto {
 
   @IsOptional()
   @IsEnum(TaskStatus, {
-    message: 'Status must be Pending, In-progress or Completed',
+    message: 'Status must be Pending, In-Progress or Completed',
   })
   status?: TaskStatus;
 }
