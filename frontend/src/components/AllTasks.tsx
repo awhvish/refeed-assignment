@@ -1,38 +1,51 @@
 "use client";
 
+import axiosInstance from "@/utils/axios";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
 
 const AllTasks = () => {
   const router = useRouter();
+  const [tasks, setTasks] = useState<
+    { _id: string; title: string; status: string }[]
+  >([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleDelete = (id: number) => {};
+  // Fetch tasks
+  useEffect(() => {
+    const fetchTasks = async () => {
+      try {
+        const response = await axiosInstance.get("/tasks");
+        setTasks(response.data);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const tasks = [
-    {
-      id: 1,
-      title: "Work on task-app",
-      description: "Create a task-app using Next.js and TailwindCSS.",
-      status: "Completed",
-    },
-    {
-      id: 2,
-      title: "Work on chocolate-app",
-      description: "Create a chocolate-app using SexUI and TailwindPorn.",
-      status: "In Progress",
-    },
-    {
-      id: 3,
-      title: "Work on sex-app",
-      description: "Create a sex-app using ChocolateUI and TailwindCar.",
-      status: "Pending",
-    },
-    {
-      id: 4,
-      title: "Work on task-app",
-      description: "Create a task-app using Next.js and TailwindCSS.",
-      status: "Completed",
-    },
-  ];
+    fetchTasks();
+  }, []);
+
+  // Delete task
+  const handleDelete = async (id: string) => {
+    if (!window.confirm("Are you sure you want to delete this task?")) return;
+
+    try {
+      await axiosInstance.delete(`/tasks/${id}`);
+      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen text-lg">
+        Loading tasks...
+      </div>
+    );
+  }
 
   return (
     <div className="px-16 xl:px-24">
@@ -47,24 +60,23 @@ const AllTasks = () => {
           const statusColor =
             task.status === "Completed"
               ? "text-green-500"
-              : task.status === "In Progress"
+              : task.status === "In-Progress"
               ? "text-gray-500"
               : "text-red-500";
 
           return (
-            <div key={task.id} className="w-full">
+            <div key={task._id} className="w-full">
               {/* Task Card */}
               <div className="group relative flex flex-row items-center justify-between rounded-lg bg-base-200 p-5 transition-transform duration-300 hover:scale-105 hover:shadow-lg sm:flex-col sm:items-start sm:p-4">
                 {/* Task Title and Status */}
                 <div className="w-full sm:w-auto text-left">
-                  <a
-                    href={`/task/${task.id}`}
+                  <button
+                    onClick={() => router.push(`/task/${task._id}`)}
                     className="text-lg font-medium group-hover:underline block pr-2"
                   >
                     {task.title}
-                  </a>
+                  </button>
                   <span className={`${statusColor} font-semibold`}>
-                    {" "}
                     {task.status}
                   </span>
                 </div>
@@ -72,15 +84,13 @@ const AllTasks = () => {
                 {/* Buttons Wrapper (Right-Aligned) */}
                 <div className="flex space-x-2 sm:mt-3 sm:w-full sm:justify-end">
                   <button
-                    onClick={() => {
-                      router.push(`/task/edit/${task.id}`);
-                    }}
+                    onClick={() => router.push(`/task/edit/${task._id}`)}
                     className="btn btn-outline btn-sm"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(task.id)}
+                    onClick={() => handleDelete(task._id)}
                     className="btn btn-outline btn-error btn-sm"
                   >
                     Delete
