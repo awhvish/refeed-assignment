@@ -11,6 +11,7 @@ import { TaskService } from './task.service';
 import { CreateTaskDto } from 'src/dto/create-task.dto';
 import { TaskIdDto } from 'src/dto/task-id.dto';
 import { UpdateTaskDto } from 'src/dto/update-task.dto';
+import { getAllDto } from 'src/dto/get-all-task';
 
 @Controller('tasks')
 export class TaskController {
@@ -35,8 +36,22 @@ export class TaskController {
   }
 
   @Get()
-  async getAllTasks() {
-    return await this.taskService.GetAllTask();
+  async getAllTasks(@Body() params: getAllDto) {
+    if (!params.page) {
+      params.page = 1;
+    }
+    if (!params.limit) {
+      params.limit = 6;
+    }
+
+    if (!params.search) {
+      return await this.taskService.GetAllTask(params.page, params.limit);
+    }
+    return await this.taskService.GetAllTask(
+      params.page,
+      params.limit,
+      params.search,
+    );
   }
 
   @Delete('/:id')

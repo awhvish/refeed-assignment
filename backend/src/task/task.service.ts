@@ -14,9 +14,25 @@ export class TaskService {
     return await createdTask.save();
   }
 
-  async GetAllTask(): Promise<Task[]> {
-    const allTasks = await this.taskModel.find();
-    return allTasks;
+  async GetAllTask(
+    page: number = 1,
+    limit: number = 6,
+    search?: string,
+  ): Promise<{ tasks: Task[]; total: number }> {
+    const filter: { title?: { $regex: string; $options: string } } = {};
+
+    if (search) {
+      filter.title = { $regex: search, $options: 'i' };
+    }
+
+    const skip = (page - 1) * limit;
+
+    const tasksPromise = this.taskModel.find(filter).skip(skip).limit(limit);
+    const countPromise = this.taskModel.countDocuments(filter);
+
+    const [tasks, total] = await Promise.all([tasksPromise, countPromise]);
+
+    return { tasks, total };
   }
 
   async getTaskById(id: string): Promise<Task> {
