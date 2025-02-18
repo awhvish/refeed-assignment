@@ -1,6 +1,17 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 const Navbar = () => {
+  const [searchQuery, setSearchQuery] = useState("");
+  const router = useRouter();
+  const handleSearch = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    router.push(`/?search=${encodeURIComponent(searchQuery)}`);
+  };
+
   return (
     <div className="w-full">
       <div className="navbar bg-base-100 p-4 md:p-6 flex-wrap">
@@ -12,11 +23,15 @@ const Navbar = () => {
         {/* Search & Add Task Section */}
         <div className="flex items-center gap-2">
           <div className="form-control">
-            <input
-              type="text"
-              placeholder="Search Tasks"
-              className="input input-bordered w-20 sm:w-32 md:w-auto"
-            />
+            <form onSubmit={handleSearch}>
+              <input
+                type="text"
+                placeholder="Search Tasks"
+                className="input input-bordered w-20 sm:w-32 md:w-auto"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+              />
+            </form>
           </div>
 
           {/* Add Task Button */}

@@ -20,15 +20,13 @@ const EditTask = () => {
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
-  // Extract both the tasks list and the status from the Redux store
+  // Extract the tasks list and status from the Redux store
   const { list, status: tasksStatus } = useSelector(
     (state: RootState) => state.tasks
   );
 
   // Find the task from the list using the id from the URL
-  const task: Task | undefined = useSelector((state: RootState) =>
-    state.tasks.list.find((t: Task) => t._id === id)
-  );
+  const task = list.find((task: Task) => task._id === id);
 
   // Local state for the form fields
   const [title, setTitle] = useState("");
@@ -38,7 +36,7 @@ const EditTask = () => {
   // If the tasks list is empty and we're in the "idle" state, fetch the tasks.
   useEffect(() => {
     if (list.length === 0 && tasksStatus === "idle") {
-      dispatch(getAllTasks());
+      dispatch(getAllTasks({}));
     }
   }, [list, tasksStatus, dispatch]);
 
@@ -81,7 +79,7 @@ const EditTask = () => {
   return (
     <div className="flex flex-col items-center justify-center min-h-screen px-4">
       <header className="text-3xl font-semibold py-4 text-center">
-        Edit Task #{id}
+        Edit Task
       </header>
 
       <div className="w-full max-w-md bg-base-200 p-6 rounded-lg shadow-lg">

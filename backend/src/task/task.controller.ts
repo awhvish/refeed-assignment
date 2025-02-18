@@ -6,12 +6,13 @@ import {
   Put,
   Param,
   Body,
+  Query,
 } from '@nestjs/common';
 import { TaskService } from './task.service';
 import { CreateTaskDto } from 'src/dto/create-task.dto';
 import { TaskIdDto } from 'src/dto/task-id.dto';
 import { UpdateTaskDto } from 'src/dto/update-task.dto';
-import { getAllDto } from 'src/dto/get-all-task';
+import { GetAllDto } from 'src/dto/get-all-task';
 
 @Controller('tasks')
 export class TaskController {
@@ -36,22 +37,12 @@ export class TaskController {
   }
 
   @Get()
-  async getAllTasks(@Body() params: getAllDto) {
-    if (!params.page) {
-      params.page = 1;
-    }
-    if (!params.limit) {
-      params.limit = 6;
-    }
+  async getAllTasks(@Query() query: GetAllDto) {
+    const page = query.page || 1;
+    const limit = query.limit || 6;
+    const search = query.search || undefined;
 
-    if (!params.search) {
-      return await this.taskService.GetAllTask(params.page, params.limit);
-    }
-    return await this.taskService.GetAllTask(
-      params.page,
-      params.limit,
-      params.search,
-    );
+    return await this.taskService.GetAllTask(page, limit, search);
   }
 
   @Delete('/:id')

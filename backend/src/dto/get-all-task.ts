@@ -1,12 +1,17 @@
-import { IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsOptional, IsString, IsInt, Min } from 'class-validator';
+import { Transform } from 'class-transformer';
 
-export class getAllDto {
+export class GetAllDto {
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => Number(value))
+  @IsInt()
+  @Min(1)
   page?: number;
 
   @IsOptional()
-  @IsNumber()
+  @Transform(({ value }) => Number(value))
+  @IsInt()
+  @Min(1)
   limit?: number;
 
   @IsOptional()

@@ -1,39 +1,56 @@
 "use client";
 
 import axiosInstance from "@/utils/axios";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 const AllTasks = () => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const searchQuery = searchParams.get("search") || "";
+
   const [tasks, setTasks] = useState<
     { _id: string; title: string; status: string }[]
   >([]);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
+  const limit = 6;
+  const [totalPages, setTotalPages] = useState(1);
 
-  // Fetch tasks
+  const fetchTasks = async () => {
+    setLoading(true);
+    try {
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        ...(searchQuery && { search: searchQuery }),
+      }).toString();
+
+      const response = await axiosInstance.get(`/tasks?${params}`, {
+        headers: {
+          "Cache-Control": "no-cache",
+          Pragma: "no-cache",
+        },
+      });
+
+      setTasks(response.data.tasks);
+      setTotalPages(Math.ceil(response.data.total / limit));
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    const fetchTasks = async () => {
-      try {
-        const response = await axiosInstance.get("/tasks");
-        setTasks(response.data);
-      } catch (error) {
-        console.error("Error fetching tasks:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchTasks();
-  }, []);
+  }, [page, searchQuery]);
 
-  // Delete task
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
-
     try {
       await axiosInstance.delete(`/tasks/${id}`);
-      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
+      fetchTasks();
     } catch (error) {
       console.error("Error deleting task:", error);
     }
@@ -49,12 +66,10 @@ const AllTasks = () => {
 
   return (
     <div className="px-16 xl:px-24">
-      {/* Header */}
       <header className="flex items-center justify-center text-2xl font-semibold py-4">
         All your current tasks:
       </header>
 
-      {/* Task List */}
       <div className="pt-6 grid gap-6 lg:grid-cols-2 xl:grid-cols-2">
         {tasks.map((task) => {
           const statusColor =
@@ -66,9 +81,7 @@ const AllTasks = () => {
 
           return (
             <div key={task._id} className="w-full">
-              {/* Task Card */}
               <div className="group relative flex flex-row items-center justify-between rounded-lg bg-base-200 p-5 transition-transform duration-300 hover:scale-105 hover:shadow-lg sm:flex-col sm:items-start sm:p-4">
-                {/* Task Title and Status */}
                 <div className="w-full sm:w-auto text-left">
                   <button
                     onClick={() => router.push(`/task/${task._id}`)}
@@ -80,8 +93,6 @@ const AllTasks = () => {
                     {task.status}
                   </span>
                 </div>
-
-                {/* Buttons Wrapper (Right-Aligned) */}
                 <div className="flex space-x-2 sm:mt-3 sm:w-full sm:justify-end">
                   <button
                     onClick={() => router.push(`/task/edit/${task._id}`)}
@@ -102,12 +113,16 @@ const AllTasks = () => {
         })}
       </div>
 
-      {/* Pagination */}
       <div className="flex items-center justify-center pt-10 space-x-2">
-        <button className="btn btn-sm">1</button>
-        <button className="btn btn-sm btn-active">2</button>
-        <button className="btn btn-sm">3</button>
-        <button className="btn btn-sm">4</button>
+        {Array.from({ length: totalPages }).map((_, index) => (
+          <button
+            key={index}
+            onClick={() => setPage(index + 1)}
+            className={`btn btn-sm ${page === index + 1 ? "btn-active" : ""}`}
+          >
+            {index + 1}
+          </button>
+        ))}
       </div>
     </div>
   );

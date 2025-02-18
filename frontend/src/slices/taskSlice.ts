@@ -9,11 +9,24 @@ interface Task {
   status?: string;
 }
 
-// Async Thunks
-export const getAllTasks = createAsyncThunk("tasks/getAllTasks", async () => {
-  const response = await axiosInstance.get("/tasks");
-  return response.data;
-});
+interface TaskGetAll {
+  page?: number;
+  limit?: number;
+  search?: string;
+}
+
+export const getAllTasks = createAsyncThunk(
+  "tasks/getAllTasks",
+  async (params: TaskGetAll) => {
+    const { page = 1, limit = 6, search = "" } = params;
+    console.log("Fetching tasks with:", { page, limit, search });
+
+    const response = await axiosInstance.get("/tasks", {
+      params: { page, limit, search },
+    });
+    return response.data.tasks;
+  }
+);
 
 export const createTask = createAsyncThunk(
   "tasks/createTask",
