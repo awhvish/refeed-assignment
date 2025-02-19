@@ -3,6 +3,7 @@
 import axiosInstance from "@/utils/axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { Filter } from "lucide-react";
 
 const AllTasks = () => {
   const router = useRouter();
@@ -59,7 +60,7 @@ const AllTasks = () => {
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-screen text-lg">
-        Loading tasks...
+        <span className="loading loading-spinner loading-lg"></span>
       </div>
     );
   }
@@ -69,7 +70,29 @@ const AllTasks = () => {
       <header className="flex items-center justify-center text-2xl font-semibold py-4">
         All your current tasks:
       </header>
-
+      <div className="dropdown dropdown-bottom">
+        <div tabIndex={0} role="button" className="btn m-1">
+          <Filter></Filter>
+          Filter
+        </div>
+        <ul
+          tabIndex={0}
+          className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
+        >
+          <li>
+            <a>No Filter</a>
+          </li>
+          <li>
+            <a>Filter by status: Pending</a>
+          </li>
+          <li>
+            <a>Filter by status: In-Progress</a>
+          </li>
+          <li>
+            <a>Filter by status: Completed</a>
+          </li>
+        </ul>
+      </div>
       <div className="pt-6 grid gap-6 lg:grid-cols-2 xl:grid-cols-2">
         {tasks.map((task) => {
           const statusColor =

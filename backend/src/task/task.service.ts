@@ -1,17 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { TaskDocument, Task } from 'src/schemas/task.schema';
+import { TaskDocument, Task } from '../schemas/task.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { CreateTaskDto } from 'src/dto/create-task.dto';
-import { UpdateTaskDto } from 'src/dto/update-task.dto';
+import { CreateTaskDto } from '../dto/create-task.dto';
+import { UpdateTaskDto } from '../dto/update-task.dto';
 
 @Injectable()
 export class TaskService {
   constructor(@InjectModel(Task.name) private taskModel: Model<TaskDocument>) {}
 
   async createTask(newTask: CreateTaskDto): Promise<Task> {
-    const createdTask = new this.taskModel(newTask);
-    return await createdTask.save();
+    return await this.taskModel.create(newTask);
   }
 
   async GetAllTask(

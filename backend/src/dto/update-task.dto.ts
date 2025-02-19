@@ -1,5 +1,5 @@
 import { IsEnum, IsOptional, IsString } from 'class-validator';
-import { TaskStatus } from 'src/schemas/task.schema';
+import { TaskStatus } from '../schemas/task.schema';
 
 export class UpdateTaskDto {
   @IsOptional()
