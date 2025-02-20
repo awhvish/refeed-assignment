@@ -19,8 +19,8 @@ Ensure you have the following installed:
 
 ### 2️⃣ Clone the Repository
 ```sh
-git clone https://github.com/your-username/your-repo.git
-cd your-repo
+git clone https://github.com/your-username/refeed-assignment.git
+cd refeed-assignment
 ```
 
 ## 🚀 Running the Backend (NestJS)
@@ -35,10 +35,10 @@ npm install
 Create a `.env` file in the `backend/` directory:
 ```env
 PORT=5000
-MONGO_URI=mongodb://localhost:27017/yourdbname
+MONGO_URI="yourMongoURL"
 ```
 
-### 4️⃣ Run the Backend
+### 4️⃣ Run the Backend 
 ```sh
 npm run start:dev
 ```
