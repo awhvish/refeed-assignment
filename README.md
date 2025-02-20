@@ -54,7 +54,7 @@ npm install
 ```
 
 ### 2️⃣ Setup Environment Variables
-Create a `.env.local` file in the `frontend/` directory:
+Create a `.env` file in the `frontend/` directory:
 ```env
 PUBLIC_API_URL=http://localhost:5000
 ```
@@ -151,22 +151,11 @@ This will run tests on every push and upload coverage reports as an artifact. �
 
 ---
 
-## 🚀 Deployment
-You can deploy:
-- **Frontend (Next.js)** → Vercel, Netlify
-- **Backend (NestJS)** → Render, AWS, DigitalOcean, or Docker
 
-For production, ensure you:
+## For production, ensure you:
 - Use **a cloud MongoDB** like MongoDB Atlas
 - Set correct **CORS policies** in NestJS
 
 ---
 
-## 🎯 Contributing
-Feel free to fork and open pull requests!
-
----
-
-## 📜 License
-This project is licensed under the [MIT License](LICENSE).
 
