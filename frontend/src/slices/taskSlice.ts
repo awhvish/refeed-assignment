@@ -13,16 +13,17 @@ interface TaskGetAll {
   page?: number;
   limit?: number;
   search?: string;
+  filter?: string;
 }
 
 export const getAllTasks = createAsyncThunk(
   "tasks/getAllTasks",
   async (params: TaskGetAll) => {
-    const { page = 1, limit = 6, search = "" } = params;
-    console.log("Fetching tasks with:", { page, limit, search });
+    const { page = 1, limit = 6, search = "", filter = "" } = params;
+    console.log("Fetching tasks with:", { page, limit, search, filter });
 
     const response = await axiosInstance.get("/tasks", {
-      params: { page, limit, search },
+      params: { page, limit, search, filter },
     });
     return response.data.tasks;
   }

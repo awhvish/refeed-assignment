@@ -85,7 +85,9 @@ const EditTask = () => {
       <div className="w-full max-w-md bg-base-200 p-6 rounded-lg shadow-lg">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-lg font-medium mb-1">Title</label>
+            <label className="block text-lg font-medium mb-1">
+              Title <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               className="input input-bordered w-full"
@@ -97,7 +99,7 @@ const EditTask = () => {
 
           <div className="mb-4">
             <label className="block text-lg font-medium mb-1">
-              Description
+              Description <span className="text-red-500">*</span>
             </label>
             <textarea
               className="textarea textarea-bordered w-full"

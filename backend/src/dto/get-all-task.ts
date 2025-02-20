@@ -17,4 +17,8 @@ export class GetAllDto {
   @IsOptional()
   @IsString()
   search?: string;
+
+  @IsOptional()
+  @IsString()
+  filter?: string;
 }

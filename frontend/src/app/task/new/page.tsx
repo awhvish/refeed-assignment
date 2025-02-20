@@ -49,7 +49,9 @@ const NewTask = () => {
       <div className="w-full max-w-md bg-base-200 p-6 rounded-lg shadow-lg">
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label className="block text-lg font-medium mb-1">Title</label>
+            <label className="block text-lg font-medium mb-1">
+              Title <span className="text-red-500">*</span>
+            </label>
             <input
               type="text"
               placeholder="Enter task title..."
@@ -62,7 +64,7 @@ const NewTask = () => {
 
           <div className="mb-4">
             <label className="block text-lg font-medium mb-1">
-              Description
+              Description <span className="text-red-500">*</span>
             </label>
             <textarea
               placeholder="Enter task description..."

@@ -3,6 +3,7 @@
 import axiosInstance from "@/utils/axios";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { Filter } from "lucide-react";
 
 const AllTasks = () => {
@@ -21,10 +22,13 @@ const AllTasks = () => {
   const fetchTasks = async () => {
     setLoading(true);
     try {
+      const filterParam = searchParams.get("filter");
+
       const params = new URLSearchParams({
         page: page.toString(),
         limit: limit.toString(),
         ...(searchQuery && { search: searchQuery }),
+        ...(filterParam && { filter: filterParam }),
       }).toString();
 
       const response = await axiosInstance.get(`/tasks?${params}`, {
@@ -45,7 +49,7 @@ const AllTasks = () => {
 
   useEffect(() => {
     fetchTasks();
-  }, [page, searchQuery]);
+  }, [page, searchQuery, searchParams.get("filter")]);
 
   const handleDelete = async (id: string) => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
@@ -54,6 +58,26 @@ const AllTasks = () => {
       fetchTasks();
     } catch (error) {
       console.error("Error deleting task:", error);
+    }
+  };
+
+  const applyFilter = async (filterValue = "") => {
+    try {
+      setLoading(true);
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: limit.toString(),
+        ...(searchQuery && { search: searchQuery }),
+        ...(filterValue && { filter: filterValue }),
+      }).toString();
+
+      const response = await axiosInstance.get(`/tasks?${params}`);
+      setTasks(response.data.tasks);
+      setTotalPages(Math.ceil(response.data.total / limit));
+    } catch (error) {
+      console.error("Error filtering tasks:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -80,16 +104,22 @@ const AllTasks = () => {
           className="dropdown-content menu bg-base-100 rounded-box z-[1] w-52 p-2 shadow"
         >
           <li>
-            <a>No Filter</a>
+            <a onClick={() => applyFilter()}>No Filter</a>
           </li>
           <li>
-            <a>Filter by status: Pending</a>
+            <a onClick={() => applyFilter("pending")}>
+              Filter by status: Pending
+            </a>
           </li>
           <li>
-            <a>Filter by status: In-Progress</a>
+            <a onClick={() => applyFilter("in-progress")}>
+              Filter by status: In-Progress
+            </a>
           </li>
           <li>
-            <a>Filter by status: Completed</a>
+            <a onClick={() => applyFilter("completed")}>
+              Filter by status: Completed
+            </a>
           </li>
         </ul>
       </div>

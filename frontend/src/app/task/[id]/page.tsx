@@ -3,11 +3,10 @@
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useParams, useRouter } from "next/navigation";
-import { getAllTasks } from "@/slices/taskSlice";
+import { getAllTasks, deleteTask } from "@/slices/taskSlice";
 import { RootState, AppDispatch } from "@/utils/store";
 import axiosInstance from "@/utils/axios";
 
-// Define a Task interface to match your state structure
 interface Task {
   _id: string;
   title: string;
@@ -16,27 +15,26 @@ interface Task {
 }
 
 const UniqueTaskPage = () => {
-  // Get the task ID from the URL
-  const { id } = useParams();
+  // Ensure id is correctly extracted as a string
+  const { id } = useParams() as { id: string };
   const dispatch = useDispatch<AppDispatch>();
   const router = useRouter();
 
-  // Extract the tasks list and status from Redux state
+  // Extract tasks and status from Redux state
   const { list, status: tasksStatus } = useSelector(
     (state: RootState) => state.tasks
   );
 
-  // If tasks are not yet loaded and status is idle, fetch them
+  // Fetch tasks if not already loaded
   useEffect(() => {
     if (list.length === 0 && tasksStatus === "idle") {
-      dispatch(getAllTasks());
+      dispatch(getAllTasks({}));
     }
   }, [list, tasksStatus, dispatch]);
 
-  // Find the unique task using _id
+  // Find the specific task
   const task: Task | undefined = list.find((t: Task) => t._id === id);
 
-  // Show loading state while tasks are being fetched
   if (tasksStatus === "loading") {
     return (
       <div className="flex items-center justify-center min-h-screen text-lg">
@@ -45,7 +43,6 @@ const UniqueTaskPage = () => {
     );
   }
 
-  // If tasks have loaded but the task isn't found, show a message
   if (tasksStatus === "succeeded" && !task) {
     return (
       <div className="flex items-center justify-center min-h-screen text-lg">
@@ -54,12 +51,14 @@ const UniqueTaskPage = () => {
     );
   }
 
-  const handleDelete = async (id: string) => {
+  // Handle task deletion
+  const handleDelete = async () => {
     if (!window.confirm("Are you sure you want to delete this task?")) return;
 
     try {
       await axiosInstance.delete(`/tasks/${id}`);
-      setTasks((prevTasks) => prevTasks.filter((task) => task._id !== id));
+      dispatch(deleteTask(id)); // Dispatch Redux action to update state
+      router.push("/"); // Redirect to home after deletion
     } catch (error) {
       console.error("Error deleting task:", error);
     }
@@ -86,7 +85,7 @@ const UniqueTaskPage = () => {
             Edit
           </button>
           <button
-            onClick={() => handleDelete(id)}
+            onClick={handleDelete}
             className="btn btn-outline btn-error btn-md"
           >
             Delete

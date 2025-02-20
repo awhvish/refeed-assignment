@@ -41,8 +41,9 @@ export class TaskController {
     const page = query.page || 1;
     const limit = query.limit || 6;
     const search = query.search || undefined;
+    const statusFilter = query.filter || undefined;
 
-    return await this.taskService.GetAllTask(page, limit, search);
+    return await this.taskService.GetAllTask(page, limit, search, statusFilter);
   }
 
   @Delete('/:id')
