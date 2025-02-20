@@ -38,9 +38,13 @@ const mockTaskModel = {
     return Promise.resolve(newTask);
   }),
 
-  find: jest.fn(() => ({
-    skip: jest.fn(() => ({
-      limit: jest.fn().mockResolvedValue(mockTaskArray),
+  find: jest.fn().mockImplementation(() => ({
+    sort: jest.fn().mockImplementation(() => ({
+      skip: jest.fn().mockImplementation(() => ({
+        limit: jest.fn().mockImplementation(() => ({
+          lean: jest.fn().mockResolvedValue(mockTaskArray),
+        })),
+      })),
     })),
   })),
 
@@ -76,7 +80,6 @@ const mockTaskModel = {
 
   countDocuments: jest.fn(() => Promise.resolve(mockTaskArray.length)),
 
-  // 🔹 Properly mock Mongoose model constructor
   new: jest.fn().mockImplementation((taskDto: CreateTaskDto) => ({
     ...createMockTask(taskDto),
     save: jest.fn().mockResolvedValue(createMockTask(taskDto)),

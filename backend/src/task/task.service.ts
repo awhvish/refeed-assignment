@@ -30,9 +30,6 @@ export class TaskService {
     search?: string,
     statusFilter?: string,
   ): Promise<{ tasks: Task[]; total: number }> {
-    // Debug incoming parameters
-    console.log('Received filters:', { search, statusFilter });
-
     const validStatuses = {
       pending: TaskStatus.Pending,
       'in-progress': TaskStatus.InProgress,
@@ -48,7 +45,6 @@ export class TaskService {
       queryFilter.title = { $regex: search, $options: 'i' };
     }
 
-    // More robust status filter handling
     if (statusFilter) {
       console.log('Status filter received:', statusFilter);
       const statusKey = statusFilter.toLowerCase().trim();
@@ -57,28 +53,19 @@ export class TaskService {
 
       if (statusKey in validStatuses) {
         queryFilter.status = validStatuses[statusKey] as TaskStatus;
-        console.log('Setting status filter to:', queryFilter.status);
-      } else {
-        console.log('Status key not found in valid statuses');
       }
     }
 
-    console.log('Final query filter:', JSON.stringify(queryFilter));
-
-    // Calculate skip value for pagination
     const skip = (page - 1) * limit;
 
-    // Get tasks with filter and pagination
     const tasks = await this.taskModel
       .find(queryFilter)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .lean()
-      .exec();
+      .lean();
 
-    // Get total count for pagination info
-    const total = await this.taskModel.countDocuments(queryFilter).exec();
+    const total = await this.taskModel.countDocuments(queryFilter);
 
     return { tasks, total };
   }
